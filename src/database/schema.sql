@@ -39,8 +39,11 @@ EXECUTE FUNCTION insert_user_info();
 CREATE TABLE servicos (
     id SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
-    preco DECIMAL(10, 2) NOT NULL
+    preco_cents DECIMAL(10, 2) NOT NULL,
+    duracao_minutos INTEGER NOT NULL,
 );
+
+ALTER TABLE servicos RENAME COLUMN descricao_minutos TO duracao_minutos;
 
 
 CREATE TABLE profissional_servico (
