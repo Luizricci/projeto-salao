@@ -7,10 +7,7 @@ const userRoutes = Router();
 userRoutes.get("/", userController.getAllUsers);
 userRoutes.get("/:id", verifyToken, userController.getUserById);
 userRoutes.post("/", userController.createUser);
-
-// ⬇️ ALTERAR TIPO ANTES DO PUT /:id
 userRoutes.put("/alterar-tipo", verifyToken, userController.alterarTipoUsuario);
-
 userRoutes.put("/:id", userController.updateUser);
 userRoutes.delete("/:id", userController.deleteUser);
 
