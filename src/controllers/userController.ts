@@ -26,6 +26,7 @@ const getUserById = async (req: Request, res: Response) => {
 const createUser = async (req: Request, res: Response) => {
     const { name, email, password } : {name: string, email: string, password: string} = req.body;
     try {
+        
         const newUser = await userModel.createUser(name, email, password);
         res.status(201).json(newUser);
     } catch (error) {

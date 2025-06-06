@@ -1,4 +1,5 @@
 import pool from '../config/database';
+const bcrypt = require('bcryptjs');
 
 const getAllUsers = async () => {
     const result = await pool.query('SELECT * FROM users');
@@ -13,9 +14,10 @@ const getUserById = async (id: number) => {
     return result.rows[0];
 }
 const createUser = async ( name: string, email: string, password:string ) => {
+    const hashedPassword = await bcrypt.hash(password, 10);
     const result = await pool.query(
         'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *',
-        [name, email, password]
+        [name, email, hashedPassword]
     );
     return result.rows[0];
 }
