@@ -1,4 +1,4 @@
-CREATE DATABASE IF NOT EXISTS charme;
+CREATE DATABASE charme;
 
 \c charme;
 
@@ -6,7 +6,7 @@ CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE
 );
 
 CREATE TABLE user_info (
@@ -19,7 +19,7 @@ CREATE TABLE user_info (
 CREATE OR REPLACE FUNCTION insert_user_info()
 RETURNS TRIGGER AS $$
 BEGIN
-    INSERT INTO users_info (id, name, phone, address)
+    INSERT INTO user_info (id, name, phone, address)
     VALUES (NEW.id, NEW.name, NULL, NULL); 
     RETURN NEW;
 END;
@@ -42,8 +42,8 @@ CREATE TABLE agendamento (
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     servico_id INTEGER NOT NULL REFERENCES servicos(id) ON DELETE CASCADE,
     data DATE NOT NULL,
-    hora TIME NOT NULL,
-)
+    hora TIME NOT NULL
+);
 
 
 
