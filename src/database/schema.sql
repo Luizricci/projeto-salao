@@ -43,14 +43,7 @@ CREATE TABLE servicos (
     duracao_minutos INTEGER NOT NULL,
 );
 
-ALTER TABLE servicos RENAME COLUMN descricao_minutos TO duracao_minutos;
 
-
-CREATE TABLE profissional_servico (
-    id SERIAL PRIMARY KEY,
-    profissional_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    servico_id INTEGER NOT NULL REFERENCES servicos(id) ON DELETE CASCADE
-);
 
 
 CREATE TABLE agendamento (
