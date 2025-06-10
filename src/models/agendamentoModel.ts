@@ -4,9 +4,19 @@ const getAllAgendamentos = async () => {
     const result = await pool.query('SELECT * FROM agendamento');
     return result.rows;
 }
-const getAgendamentoById = async (id: number) => {
-    const result = await pool.query('SELECT * FROM agendamento WHERE id = $1', [id]);
-    return result.rows[0];
+const getAgendamentoByClientId = async (clienteId: number) => {
+    const result = await pool.query(
+        `SELECT 
+            agendamento.*,
+            servicos.nome AS servico_nome,
+            profissional.name AS profissional_nome
+        FROM agendamento
+        LEFT JOIN servicos ON agendamento.servico_id = servicos.id
+        LEFT JOIN users AS profissional ON agendamento.profissional_id = profissional.id
+        WHERE agendamento.cliente_id = $1`,
+        [clienteId]
+    );
+    return result.rows;
 }
 
 const horariosPermitidos = [
@@ -15,22 +25,20 @@ const horariosPermitidos = [
   "17:00:00", "18:00:00", "19:00:00"
 ];
 
-// Função para verificar se a data/hora está dentro do horário de funcionamento (segunda a sábado, 09h às 19h)
+
 function isHorarioFuncionamento(data: Date, hora: string) {
-    const diaSemana = data.getDay(); // 0 = domingo, 6 = sábado
-    if (diaSemana === 0) return false; // domingo
+    const diaSemana = data.getDay(); 
+    if (diaSemana === 0) return false; 
     const [h, m, s] = hora.split(":").map(Number);
     const horaNum = h + (m / 60);
     return horaNum >= 9 && horaNum <= 19;
 }
 
 const createAgendamento = async ( data: Date, hora: string, cliente_id: number, servico_id: number, profissional_id: number) => {
-    // Regra: Não agendar fora do horário de funcionamento
     if (!horariosPermitidos.includes(hora) || !isHorarioFuncionamento(data, hora)) {
         throw new Error("Horário não permitido ou fora do horário de funcionamento");
     }
 
-    // Regra: Cliente não pode agendar mais de um serviço no mesmo horário
     const conflitoCliente = await pool.query(
         'SELECT 1 FROM agendamento WHERE data = $1 AND hora = $2 AND cliente_id = $3',
         [data, hora, cliente_id]
@@ -39,7 +47,6 @@ const createAgendamento = async ( data: Date, hora: string, cliente_id: number, 
         throw new Error("Você já possui um agendamento neste horário");
     }
 
-    // Regra: Profissional não pode ter dois agendamentos no mesmo horário
     const conflitoProfissional = await pool.query(
         'SELECT 1 FROM agendamento WHERE data = $1 AND hora = $2 AND profissional_id = $3',
         [data, hora, profissional_id]
@@ -55,7 +62,6 @@ const createAgendamento = async ( data: Date, hora: string, cliente_id: number, 
     return result.rows[0];
 };
 
-// Regra: Cancelamento só pode ser feito com no mínimo 6 horas de antecedência
 const cancelarAgendamento = async (agendamentoId: number, clienteId: number) => {
     const result = await pool.query('DELETE FROM agendamento WHERE id = $1 AND cliente_id = $2 RETURNING *', [agendamentoId, clienteId]);
     if (result.rows.length === 0) {
@@ -66,7 +72,7 @@ const cancelarAgendamento = async (agendamentoId: number, clienteId: number) => 
 
 export default {
     getAllAgendamentos,
-    getAgendamentoById,
+    getAgendamentoByClientId,
     createAgendamento,
     cancelarAgendamento
 };

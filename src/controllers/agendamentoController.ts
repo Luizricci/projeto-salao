@@ -11,13 +11,13 @@ const getAllAgendamentos = async (req: Request, res: Response) => {
 };
 
 const getAgendamentoById = async (req: Request, res: Response): Promise<void> => {
-    const id = Number(req.params.id);
-    if (isNaN(id)) {
+    const clienteId = Number(req.params.id);
+    if (isNaN(clienteId)) {
         res.status(400).json({ message: "ID inválido" });
         return ;
     }
     try {
-        const agendamento = await agendamentoModel.getAgendamentoById(id);
+        const agendamento = await agendamentoModel.getAgendamentoByClientId(clienteId);
         if (!agendamento) {
             res.status(404).json({ message: "Agendamento não encontrado" });
             return ;
