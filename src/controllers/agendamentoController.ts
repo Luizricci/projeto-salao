@@ -27,6 +27,23 @@ const getAgendamentoById = async (req: Request, res: Response): Promise<void> =>
         res.status(500).json({ message: "Erro ao buscar agendamento" });
     }
 };
+const getAgendamentoByProfissionalId = async (req: Request, res: Response): Promise<void> => {
+    const profissionalId = Number(req.params.id);
+    if (isNaN(profissionalId)) {
+        res.status(400).json({ message: "ID inválido" });
+        return ;
+    }
+    try {
+        const agendamento = await agendamentoModel.getAgendamentoByProfissionalId(profissionalId);
+        if (!agendamento) {
+            res.status(404).json({ message: "Agendamento não encontrado" });
+            return ;
+        }
+        res.status(200).json(agendamento);
+    } catch (error) {
+        res.status(500).json({ message: "Erro ao buscar agendamento" });
+    }
+}
 
 const createAgendamento = async (req: Request, res: Response) => {
     const { data, hora, cliente_id, servico_id, profissional_id } = req.body;
@@ -43,6 +60,8 @@ const createAgendamento = async (req: Request, res: Response) => {
         res.status(400).json({ message: error.message || "Erro ao criar agendamento" });
     }
 };
+
+
 
 const cancelarAgendamento = async (req: Request, res: Response): Promise<void> => {
     const agendamentoId = Number(req.params.id);
@@ -65,5 +84,6 @@ export default {
     getAllAgendamentos,
     getAgendamentoById,
     createAgendamento,
-    cancelarAgendamento
+    cancelarAgendamento,
+    getAgendamentoByProfissionalId
 };

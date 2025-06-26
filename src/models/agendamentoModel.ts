@@ -18,6 +18,20 @@ const getAgendamentoByClientId = async (clienteId: number) => {
     );
     return result.rows;
 }
+const getAgendamentoByProfissionalId = async (profissionalId: number) => {
+    const result = await pool.query(
+        `SELECT 
+            agendamento.*,
+            servicos.nome AS servico_nome,
+            cliente.name AS cliente_nome
+        FROM agendamento
+        LEFT JOIN servicos ON agendamento.servico_id = servicos.id
+        LEFT JOIN users AS cliente ON agendamento.cliente_id = cliente.id
+        WHERE agendamento.profissional_id = $1`,
+        [profissionalId]
+    );
+    return result.rows;
+}
 
 const horariosPermitidos = [
   "09:00:00", "10:00:00", "11:00:00", "12:00:00",
@@ -74,5 +88,6 @@ export default {
     getAllAgendamentos,
     getAgendamentoByClientId,
     createAgendamento,
-    cancelarAgendamento
+    cancelarAgendamento,
+    getAgendamentoByProfissionalId
 };
